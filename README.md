@@ -4,7 +4,7 @@ Autonomous OS agent: Q-learning, session geometry, interventional causal graph. 
 # Minuet (v99)
 ### Autonomous Causal Discovery Agent for Linux
 
-Minuet is a Python-based autonomous agent that treats the host operating system as an **interactive substrate** — not a passive environment to monitor, but a causal field to interrogate through planned intervention. It observes, acts, measures effect, and updates a live causal graph. It does not report problems. It resolves them.
+Minuet is a Python-based autonomous agent that treats the host operating system as an **interactive substrate** ,not a passive environment to monitor, but a causal field to interrogate through planned intervention. It observes, acts, measures effect, and updates a live causal graph. It does not report problems. It resolves them.
 
 > Source is closed. This repository documents architecture, design philosophy, and version lineage.
 
@@ -21,7 +21,7 @@ Minuet runs as a background process with root access. Every 1–2.5 seconds (ada
 5. **Measures** the before/after delta across targeted metrics
 6. **Updates** the interventional edge for that `(action, metric)` pair
 
-After enough interventions, the graph stabilizes. Minuet knows which actions actually move which metrics on *this specific machine* under *this specific workload shape* — not in theory, but from empirical measurement.
+After enough interventions, the graph stabilizes. Minuet knows which actions actually move which metrics on *this specific machine* under *this specific workload shape* , not in theory, but from empirical measurement.
 
 ---
 
@@ -29,7 +29,7 @@ After enough interventions, the graph stabilizes. Minuet knows which actions act
 
 ### TrueCausalGraph
 
-The core reasoning substrate. Not correlation-based. Minuet records **interventional edges** — `(action, metric)` pairs with measured effect magnitudes — using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
+The core reasoning substrate. Not correlation-based. Minuet records **interventional edges** — `(action, metric)` pairs with measured effect magnitudes, using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
 
 Actions with fast side effects (governor changes, process kills) write only to their target metrics to prevent confound poisoning. Observation-only actions accumulate broader edges naturally, diluted across many samples.
 
@@ -52,14 +52,14 @@ These flow into both action selection and causal edge accumulation. The agent le
 
 ### Browser Process Classifier
 
-Brand-agnostic, cmdline-based process taxonomy. Identifies Chromium-family (`--type=renderer`, `--type=gpu-process`, `--type=zygote`, `--extension-process`), Gecko/Firefox-family (`-contentproc`, `-childID`, `-isForBrowser`), and WebKit-family processes by structural flags — not by executable name. Assigns kill priority 0–4. Never kills MAIN processes. Extension renderers (priority 1) are safest; foreground tab renderers (priority 3) cause Aw Snap but browser survives.
+Brand-agnostic, cmdline-based process taxonomy. Identifies Chromium-family (`--type=renderer`, `--type=gpu-process`, `--type=zygote`, `--extension-process`), Gecko/Firefox-family (`-contentproc`, `-childID`, `-isForBrowser`), and WebKit-family processes by structural flags, not by executable name. Assigns kill priority 0–4. Never kills MAIN processes. Extension renderers (priority 1) are safest; foreground tab renderers (priority 3) cause Aw Snap but browser survives.
 
 ### SelfTuner (Adaptive Threshold Engine)
 
 Every 300 steps, analyzes rolling metric history via EMA to adapt five runtime thresholds toward observed machine reality:
 
 - `CPU_WARN`, `MEM_WARN`, `NET_WARN` — tuned to 95th percentile × 1.5
-- `DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` — tuned to 75th percentile × 1.3
+- `DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` tuned to 75th percentile × 1.3
 
 Floors are hard-coded. Thresholds can only decrease gradually. Adapted values persist across sessions in the pickle.
 
@@ -71,7 +71,7 @@ When the SelfTuner identifies an uncovered metric gap, the ActionProposer consul
 
 ### Precognitive Launch Detection
 
-Watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, etc.) and pre-emptively locks the performance governor *before* telemetry spikes — eliminating the 30-second spin-up latency window where the machine thrashes before the agent can respond.
+Watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, etc.) and pre-emptively locks the performance governor *before* telemetry spikes, eliminating the 30-second spin-up latency window where the machine thrashes before the agent can respond.
 
 ### IRQ Storm Detection
 
@@ -87,7 +87,7 @@ Listens and emits surprise hints over UDP (port 54321) for multi-machine environ
 
 ### OOM Immunity
 
-Writes `-1000` to `/proc/self/oom_score_adj` at startup. The kernel will not kill Minuet during a memory crunch — the moment it is most needed.
+Writes `-1000` to `/proc/self/oom_score_adj` at startup. The kernel will not kill Minuet during a memory crunch; the moment it is most needed.
 
 ### PSI Integration
 
@@ -172,7 +172,7 @@ Curses-based terminal UI. Displays live metrics, current action, causal graph su
 
 ## Relationship to SUKOSHI
 
-Minuet (v99) is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) — a browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where Minuet interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
+Minuet (v99) is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) , a browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where Minuet interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
 
 ---
 
