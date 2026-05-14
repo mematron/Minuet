@@ -15,7 +15,7 @@ Minuet is a Python-based autonomous agent that treats the host operating system 
 Minuet runs as a background process with root access. Every 1–2.5 seconds (adaptive step rate) it:
 
 1. **Samples** ~28 system metrics spanning CPU, memory, thermals, network, I/O, swap, PSI, and IRQ state
-2. **Classifies** the current session geometry — workload fingerprint derived from pure resource ratios, no app names
+2. **Classifies** the current session geometry (workload fingerprint derived from pure resource ratios, no app names)
 3. **Selects** an action via its causal graph and learned confidence scores
 4. **Executes** the action if warranted, or monitors if nominal
 5. **Measures** the before/after delta across targeted metrics
@@ -29,7 +29,7 @@ After enough interventions, the graph stabilizes. Minuet knows which actions act
 
 ### TrueCausalGraph
 
-The core reasoning substrate. Not correlation-based. Minuet records **interventional edges** — `(action, metric)` pairs with measured effect magnitudes, using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
+The core reasoning substrate. Not correlation-based. Minuet records **interventional edges** `(action, metric)` pairs with measured effect magnitudes, using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
 
 Actions with fast side effects (governor changes, process kills) write only to their target metrics to prevent confound poisoning. Observation-only actions accumulate broader edges naturally, diluted across many samples.
 
