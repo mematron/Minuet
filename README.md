@@ -24,7 +24,7 @@ Minuet runs as a background process with root access. Every 1–2.5 seconds (ada
 After enough interventions, the graph stabilizes. Minuet knows which actions actually move which metrics on *this specific machine* under *this specific workload shape* , not in theory, but from empirical measurement.
 
 ---
-![Minuet v99 live](assets/minuetv99a.png)
+![Minuet v99 live](minuetv99a.png)
 ## Architecture
 
 ### TrueCausalGraph
