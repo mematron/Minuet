@@ -1,7 +1,7 @@
 # Minuet (v99)
 ### Autonomous Causal Discovery Agent for Linux
 
-Minuet is a Python-based autonomous agent that treats the host operating system as an **interactive substrate** ,not a passive environment to monitor, but a causal field to interrogate through planned intervention. It observes, acts, measures effect, and updates a live causal graph. It does not report problems. It resolves them.
+Minuet is a Python-based autonomous agent that treats the host operating system as an **interactive substrate** ,not a passive environment to monitor, but a causal field to interrogate through planned intervention. It observes, acts, measures effect, and updates a live causal graph. It's able to report and resolve problems.
 
 > Source is closed. This repository documents architecture, design philosophy, and version lineage.
 
