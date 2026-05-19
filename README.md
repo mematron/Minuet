@@ -35,7 +35,7 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 
 ### TrueCausalGraph
 
-The core reasoning substrate. Not correlation-based. ARMINTA records **interventional edges**v`(action, metric)` pairs with measured effect magnitudes; using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
+The core reasoning substrate. Not correlation-based. ARMINTA records **interventional edges** `(action, metric)` pairs with measured effect magnitudes; using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
 
 Actions with fast side effects (governor changes, process kills) write only to their target metrics to prevent confound poisoning. Observation-only actions accumulate broader edges naturally, diluted across many samples.
 
@@ -45,7 +45,7 @@ The graph is bootstrapped from 60 steps of passive observation before any interv
 
 ### Situated Causal Learning
 
-Causal edges are learned per-situation, not globally. ARMINTA maintains separate edge weight distributions for each classified workload context (idle, compile, stream, etc.). Before crediting an action for a metric improvement, it applies **counterfactual correction**.  If the metric was already trending in the right direction before the action fired, that trend is subtracted from the credit. The agent does not take rewards it did not earn.
+Causal edges are learned per-situation, not globally. ARMINTA maintains separate edge weight distributions for each classified workload context (idle, compile, stream, etc.). Before crediting an action for a metric improvement, it applies **counterfactual correction**. If the metric was already trending in the right direction before the action fired, that trend is subtracted from the credit. The agent does not take rewards it did not earn.
 
 Recency decay further down-weights observations from distant steps, so the graph reflects current machine behavior rather than drifting on ancient history.
 
@@ -92,8 +92,8 @@ Brand-agnostic, cmdline-based process taxonomy. Identifies Chromium-family (`--t
 
 Every 300 steps, analyzes rolling metric history via EMA to adapt five runtime thresholds toward observed machine reality:
 
--> `CPU_WARN`, `MEM_WARN`, `NET_WARN` —> tuned to 95th percentile × 1.5
--> `DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` —> tuned to 75th percentile × 1.3
+`CPU_WARN`, `MEM_WARN`, `NET_WARN` tuned to 95th percentile × 1.5
+`DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` tuned to 75th percentile × 1.3
 
 Floors are hard-coded. Thresholds can only decrease gradually. Adapted values persist across sessions.
 
@@ -129,7 +129,7 @@ Reads `/proc/pressure/{cpu,memory,io}` stall percentages. PSI memory pressure ab
 
 ### ZRAM / ZSWAP Awareness
 
-Startup scan detects compressed swap presence. On zram/zswap systems, cache drop logic is suppressed entirely.  Compression means "drop caches" burns CPU for zero net memory gain.
+Startup scan detects compressed swap presence. On zram/zswap systems, cache drop logic is suppressed entirely. Compression means "drop caches" burns CPU for zero net memory gain.
 
 ### Battery-Aware Governor
 
@@ -141,13 +141,13 @@ Performance governor is suppressed below 20% battery. Between 20–50%, governor
 
 State persists across sessions via pickle. ARMINTA carries forward:
 
--> Full interventional edge graph with all sample histories
--> Per-action reward histories for bias correction
--> Situated causal edges per workload context
--> Adapted threshold values from SelfTuner
--> Cooldown timestamps for all actions
--> Episodic memory (separate SQLite DB)
--> Cognitive state: emotion values, self-model counters, world model associations, GA best parameters, reward history
+- Full interventional edge graph with all sample histories
+- Per-action reward histories for bias correction
+- Situated causal edges per workload context
+- Adapted threshold values from SelfTuner
+- Cooldown timestamps for all actions
+- Episodic memory (separate SQLite DB)
+- Cognitive state: emotion values, self-model counters, world model associations, GA best parameters, reward history
 
 Version migration: ARMINTA reads its own prior-version pickles back to v86 and upgrades state automatically. Sessions are never lost to a version increment.
 
@@ -184,7 +184,7 @@ renice_ksoftirqd        monitor
 
 ## Interface
 
-Curses-based terminal UI. Displays live metrics, current action, causal graph summary, top interventional edges with effect magnitude and confidence, cognitive state (mode, emotion, curiosity, dream count), event log, and adaptive threshold state. Step rate adjusts between 0.8s (crisis) and 2.5s (all-nominal) based on current system pressure. Non-fatal errors are displayed with a clean-steps decay counter.  The badge disappears once the agent has run clean long enough to make it irrelevant.
+Curses-based terminal UI. Displays live metrics, current action, causal graph summary, top interventional edges with effect magnitude and confidence, cognitive state (mode, emotion, curiosity, dream count), event log, and adaptive threshold state. Step rate adjusts between 0.8s (crisis) and 2.5s (all-nominal) based on current system pressure. Non-fatal errors are displayed with a clean-steps decay counter. The badge disappears once the agent has run clean long enough to make it irrelevant.
 
 ---
 
@@ -209,14 +209,13 @@ Curses-based terminal UI. Displays live metrics, current action, causal graph su
 | v103 | Streaming session suppression; confound exclusion from graph override |
 | v104 | Net receive rolling average; remote noise hint via UDP |
 | v105 | Full Arminta cognitive layer: emotion, self-model, world model, dream cycle, episodic DB |
-| v106 | nodelay input fix; terminal keyboard corruption prevention |
-| v107 | Reward-discount layer on graph override; per-action reward history; clean-steps error decay |
+| v106 | nodelay input fix; terminal keyboard corruption prevention — final Minuet release |
 
 ---
 
 ## Relationship to SUKOSHI
 
-ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) A browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where ARMINTA interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
+ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) — a browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where ARMINTA interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
 
 ---
 
