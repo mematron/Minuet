@@ -35,48 +35,29 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 
 ### System Topology Map
 
-<pre style="overflow-x: auto; white-space: pre; word-wrap: normal; font-family: monospace; line-height: 1.25; background-color: #1e1e2e; color: #cdd6f4; padding: 15px; border-radius: 4px;">
-              ┌────────────────────────────────────────────────────────┐
-              │                   EpisodicMemory                       │
-              │         (Persistent SQLite Post-Mortem Log)            │
-              └───────▲────────────────────────────────────────▲───────┘
-                      │                                        │
-        [Commit Success/Failure]                       [Log Anomalies]
-                      │                                        │
-┌─────────────────────┴─────────────┐            ┌─────────────┴─────────────┐
-│        BayesianPerception         │            │        WorldModel         │
-│   (Smooths Raw Telemetry Noise    │            │  (Maps State-Action Pairs │
-│     Into True Belief State)       │            │   To Outcome Statistics)  │
-└─────────────────────▲─────────────┘            └─────────────▲─────────────┘
-                      │                                        │
-            [Reads Current State]                     [Tracks Graph Edges]
-                      │                                        │
-┌─────────────────────┴─────────────┐            ┌─────────────┴─────────────┐
-│          EmotionalState           │            │     HypothesisEngine      │
-│  (Fluctuating Affect Parameters;  │◄───────────┤  (Genetic Algorithm Runs  │
-│   Modulates Warning Thresholds)   │            │   Over System Graph Nodes)│
-└─────────────────────▲─────────────┘            └─────────────▲─────────────┘
-                      │                                        │
-          [Alters Decision Posture]                 [Generates Causal Links]
-                      │                                        │
-                      └───────┬────────────────────────┬───────┘
-                              │                        │
-                              ▼                        ▼
-                  ┌────────────────────────────────────────┐
-                  │             WorkingMemory              │
-                  │   (Rolling Buffer / 15-Step Delayed    │
-                  │         Observation Pipeline)          │
-                  └───────────────────┬────────────────────┘
-                                      │
-                         [Triggers Deep Pruning]
-                                      │
-                                      ▼
-                  ┌────────────────────────────────────────┐
-                  │               DreamCycle               │
-                  │     (Idle-State Maintenance Layer /     │
-                  │       AST Meta-Cognition Engine)       │
-                  └────────────────────────────────────────┘
-</pre>
+```mermaid
+graph TD
+    %% Styling Configuration
+    classDef default fill:#11111b,stroke:#a6adc8,stroke-width:1px,color:#cdd6f4;
+    classDef memory fill:#1e1e2e,stroke:#cdd6f4,stroke-width:1px,color:#cdd6f4;
+    
+    EpisodicMemory["EpisodicMemory <br> (Persistent SQLite Post-Mortem Log)"] :::memory
+    BayesianPerception["BayesianPerception <br> (Smooths Raw Telemetry Noise into True Belief State)"]
+    WorldModel["WorldModel <br> (Maps State-Action Pairs to Outcome Statistics)"]
+    EmotionalState["EmotionalState <br> (Fluctuating Affect Parameters; Modulates Thresholds)"]
+    HypothesisEngine["HypothesisEngine <br> (Genetic Algorithm over System Graph Nodes)"]
+    WorkingMemory["WorkingMemory <br> (Rolling Buffer / 15-Step Delayed Pipeline)"] :::memory
+    DreamCycle["DreamCycle <br> (Idle Maintenance / AST Meta-Cognition Engine)"]
+
+    %% Cognitive Framework Interconnections
+    BayesianPerception -->|Commit Success/Failure| EpisodicMemory
+    WorldModel -->|Log Anomalies| EpisodicMemory
+    EmotionalState -->|Reads Current State| BayesianPerception
+    HypothesisEngine -->|Tracks Graph Edges| WorldModel
+    HypothesisEngine -->|Generates Causal Links| WorkingMemory
+    EmotionalState -->|Alters Decision Posture| WorkingMemory
+    WorkingMemory -->|Triggers Deep Pruning| DreamCycle
+```
 
 ---
 
