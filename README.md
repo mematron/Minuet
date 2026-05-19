@@ -20,7 +20,7 @@ ARMINTA runs as a background process with root access. Every 0.8–2.5 seconds (
 4. **Executes** the action if warranted, or monitors if nominal
 5. **Measures** the before/after delta across targeted metrics
 6. **Updates** the interventional edge for that `(action, metric)` pair
-7. **Records** the episode — action, outcome, reward, emotional state — to a persistent episodic database
+7. **Records** the episode (action, outcome, reward, emotional state) to a persistent episodic database
 
 After enough interventions, the graph stabilizes. ARMINTA knows which actions actually move which metrics on *this specific machine* under *this specific workload shape* from empirical measurement.
 
@@ -35,7 +35,7 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 
 ### TrueCausalGraph
 
-The core reasoning substrate. Not correlation-based. ARMINTA records **interventional edges** `(action, metric)` pairs with measured effect magnitudes; using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
+The core reasoning substrate. Not correlation-based. ARMINTA records **interventional edges** `(action, metric)` pairs with measured effect magnitudes, using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
 
 Actions with fast side effects (governor changes, process kills) write only to their target metrics to prevent confound poisoning. Observation-only actions accumulate broader edges naturally, diluted across many samples.
 
@@ -53,21 +53,21 @@ Recency decay further down-weights observations from distant steps, so the graph
 
 Built on top of the causal graph is a full cognitive stack:
 
-**Emotion Model** — tracks valence states (calm, curious, focused, confident, alert) updated each step from reward signal and prediction error. Emotional state influences action aggression and is recorded with every episode.
+**Emotion Model** tracks valence states (calm, curious, focused, confident, alert) updated each step from reward signal and prediction error. Emotional state influences action aggression and is recorded with every episode.
 
-**Self-Model** — tracks ARMINTA's own performance over time: dreams generated, hypotheses surfaced, self-modifications made, prediction accuracy. The agent maintains an explicit representation of its own capabilities and history.
+**Self-Model** tracks ARMINTA's own performance over time: dreams generated, hypotheses surfaced, self-modifications made, prediction accuracy. The agent maintains an explicit representation of its own capabilities and history.
 
-**World Model** — Bayesian association table mapping system state fingerprints to action outcomes. Complements the causal graph with a softer probabilistic layer.
+**World Model** is a Bayesian association table mapping system state fingerprints to action outcomes. It complements the causal graph with a softer probabilistic layer.
 
-**Dream Cycle** — during idle periods ARMINTA enters a hypothesis generation loop. It proposes candidate causal relationships it has not yet directly tested, scores them against the interventional graph, and queues supported ones for active testing. This is lightweight model-based planning: the agent imagines before it acts.
+**Dream Cycle** runs during idle periods. ARMINTA enters a hypothesis generation loop, proposes candidate causal relationships it has not yet directly tested, scores them against the interventional graph, and queues supported ones for active testing. This is lightweight model-based planning: the agent imagines before it acts.
 
-**Metacognition** — a SELF_ASSESS mode in which ARMINTA reviews its own recent decision quality. During self-assessment it can defer uncertain actions and introspect on whether its current cognitive mode matches the situation.
+**Metacognition** is a SELF_ASSESS mode in which ARMINTA reviews its own recent decision quality. During self-assessment it can defer uncertain actions and introspect on whether its current cognitive mode matches the situation.
 
-**Genetic Algorithm Tuner** — slowly evolves internal parameters (learning rate, stress multipliers, thresholds) against a rolling reward history. The agent tunes itself without manual hyperparameter search.
+**Genetic Algorithm Tuner** slowly evolves internal parameters (learning rate, stress multipliers, thresholds) against a rolling reward history. The agent tunes itself without manual hyperparameter search.
 
-**Episodic Memory** — every action, dream, hypothesis, and self-modification is written to a persistent SQLite database with timestamp, step count, emotional state, reward, and outcome. 1,400+ episodes logged to date. The agent can be asked what it was doing and how it felt about it.
+**Episodic Memory** writes every action, dream, hypothesis, and self-modification to a persistent SQLite database with timestamp, step count, emotional state, reward, and outcome. 1,400+ episodes logged to date. The agent can be asked what it was doing and how it felt about it.
 
-**Error Recovery** — non-fatal exceptions are caught, logged, and counted. A clean-steps counter tracks consecutive error-free steps; after 100 clean steps the error clears from the display. If it is not happening anymore, it is not there anymore.
+**Error Recovery** catches, logs, and counts non-fatal exceptions. A clean-steps counter tracks consecutive error-free steps; after 100 clean steps the error clears from the display. If it is not happening anymore, it is not there anymore.
 
 ### Session Geometry Classifier
 
@@ -105,11 +105,11 @@ When the SelfTuner identifies an uncovered metric gap, the ActionProposer consul
 
 ### Precognitive Launch Detection
 
-Watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, etc.) and pre-emptively locks the performance governor *before* telemetry spikes — eliminating the 30-second spin-up latency window where the machine thrashes before the agent can respond.
+Watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, etc.) and pre-emptively locks the performance governor *before* telemetry spikes. This eliminates the 30-second spin-up latency window where the machine thrashes before the agent can respond.
 
 ### IRQ Storm Detection
 
-Polls `/proc/interrupts` for configurable IRQ prefix (`rtw89` by default — the rtw89 PCIe WiFi driver). When per-step interrupt delta exceeds threshold, fires `renice_ksoftirqd` to boost kernel softirq handler priority. Tracks consecutive ineffective fires per storm epoch; after 4 fires with no improvement the agent concludes the storm is hardware-level and stands down rather than wasting interventions.
+Polls `/proc/interrupts` for configurable IRQ prefix (`rtw89` by default, the rtw89 PCIe WiFi driver). When per-step interrupt delta exceeds threshold, fires `renice_ksoftirqd` to boost kernel softirq handler priority. Tracks consecutive ineffective fires per storm epoch; after 4 fires with no improvement the agent concludes the storm is hardware-level and stands down rather than wasting interventions.
 
 ### Curiosity Probe
 
@@ -121,11 +121,11 @@ Listens and emits surprise hints over UDP (port 54321) for multi-machine environ
 
 ### OOM Immunity
 
-Writes `-1000` to `/proc/self/oom_score_adj` at startup. The kernel will not kill ARMINTA during a memory crunch — the moment it is most needed.
+Writes `-1000` to `/proc/self/oom_score_adj` at startup. The kernel will not kill ARMINTA during a memory crunch, which is precisely the moment it is most needed.
 
 ### PSI Integration
 
-Reads `/proc/pressure/{cpu,memory,io}` stall percentages. PSI memory pressure above threshold suppresses `drop_caches` — evicting clean pages during active stalls makes memory pressure worse, not better.
+Reads `/proc/pressure/{cpu,memory,io}` stall percentages. PSI memory pressure above threshold suppresses `drop_caches` because evicting clean pages during active stalls makes memory pressure worse, not better.
 
 ### ZRAM / ZSWAP Awareness
 
@@ -209,13 +209,13 @@ Curses-based terminal UI. Displays live metrics, current action, causal graph su
 | v103 | Streaming session suppression; confound exclusion from graph override |
 | v104 | Net receive rolling average; remote noise hint via UDP |
 | v105 | Full Arminta cognitive layer: emotion, self-model, world model, dream cycle, episodic DB |
-| v106 | nodelay input fix; terminal keyboard corruption prevention — final Minuet release |
+| v106 | nodelay input fix; terminal keyboard corruption prevention, final Minuet release |
 
 ---
 
 ## Relationship to SUKOSHI
 
-ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) — a browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where ARMINTA interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
+ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi), a browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where ARMINTA interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
 
 ---
 
