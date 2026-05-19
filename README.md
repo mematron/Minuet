@@ -45,6 +45,10 @@ ARMINTA operates as a root-privileged background process. Every 0.8 to 2.5 secon
 6.  **Causal Update**: Updates the interventional edge for the `(action, metric)` pair, applying recency decay and confound filtering to refine confidence estimates.
 7.  **Episodic Logging**: Records the complete state (action, outcome, reward, and emotional affect) to a persistent SQLite database for future learning and debugging.
 
+![MINUET v99 live terminal](minuet99a.png)
+![ARMINTA V1 live terminal](Armintascreen.png)
+![ARMINTA V2 live terminal 2](Armintascreen2.png)
+
 ---
 
 ## Architecture
