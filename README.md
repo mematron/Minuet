@@ -37,7 +37,7 @@ graph TD
     classDef memory fill:#1e1e2e,stroke:#cdd6f4,stroke-width:1px,color:#cdd6f4;
     
     ModeController["Mode Controller <br/> (Q-Learning Over Cognitive Postures)"]
-    EpisodicMemory["EpisodicMemory <br/> (1,800+ Recorded Episodes in SQLite)"]:::memory
+    EpisodicMemory["EpisodicMemory <br/> (2,600+ Recorded Episodes in SQLite)"]:::memory
     BayesianPerception["BayesianPerception <br/> (Belief Updating & Noise Smoothing)"]
     WorldModel["WorldModel <br/> (State-Action Outcome Statistics)"]
     EmotionalState["EmotionalState <br/> (Affective Modulation: Calm, Bored, Stressed, etc.)"]
