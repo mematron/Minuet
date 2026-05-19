@@ -73,7 +73,7 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
                                       ▼
                   ┌────────────────────────────────────────┐
                   │               DreamCycle               │
-                  │     (Idle-State Maintenance Layer /     │
+                  │     (Idle-State Maintenance Layer /    │
                   │       AST Meta-Cognition Engine)       │
                   └────────────────────────────────────────┘
 ```
