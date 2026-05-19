@@ -35,8 +35,7 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 
 ### System Topology Map
 
-The diagram below maps the continuous data flow, state updates, and modification loops running inside the agent:
-
+```text
               ┌────────────────────────────────────────────────────────┐
               │                   EpisodicMemory                       │
               │         (Persistent SQLite Post-Mortem Log)            │
@@ -77,6 +76,7 @@ The diagram below maps the continuous data flow, state updates, and modification
                   │     (Idle-State Maintenance Layer /     │
                   │       AST Meta-Cognition Engine)       │
                   └────────────────────────────────────────┘
+```
 
 ---
 
