@@ -41,13 +41,13 @@ graph TD
     classDef default fill:#11111b,stroke:#a6adc8,stroke-width:1px,color:#cdd6f4;
     classDef memory fill:#1e1e2e,stroke:#cdd6f4,stroke-width:1px,color:#cdd6f4;
     
-    EpisodicMemory["EpisodicMemory <br> (Persistent SQLite Post-Mortem Log)"] :::memory
-    BayesianPerception["BayesianPerception <br> (Smooths Raw Telemetry Noise into True Belief State)"]
-    WorldModel["WorldModel <br> (Maps State-Action Pairs to Outcome Statistics)"]
-    EmotionalState["EmotionalState <br> (Fluctuating Affect Parameters; Modulates Thresholds)"]
-    HypothesisEngine["HypothesisEngine <br> (Genetic Algorithm over System Graph Nodes)"]
-    WorkingMemory["WorkingMemory <br> (Rolling Buffer / 15-Step Delayed Pipeline)"] :::memory
-    DreamCycle["DreamCycle <br> (Idle Maintenance / AST Meta-Cognition Engine)"]
+    EpisodicMemory["EpisodicMemory <br/> (Persistent SQLite Post-Mortem Log)"]:::memory
+    BayesianPerception["BayesianPerception <br/> (Smooths Raw Telemetry Noise into True Belief State)"]
+    WorldModel["WorldModel <br/> (Maps State-Action Pairs to Outcome Statistics)"]
+    EmotionalState["EmotionalState <br/> (Fluctuating Affect Parameters; Modulates Thresholds)"]
+    HypothesisEngine["HypothesisEngine <br/> (Genetic Algorithm over System Graph Nodes)"]
+    WorkingMemory["WorkingMemory <br/> (Rolling Buffer / 15-Step Delayed Pipeline)"]:::memory
+    DreamCycle["DreamCycle <br/> (Idle Maintenance / AST Meta-Cognition Engine)"]
 
     %% Cognitive Framework Interconnections
     BayesianPerception -->|Commit Success/Failure| EpisodicMemory
