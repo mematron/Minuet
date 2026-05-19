@@ -198,9 +198,9 @@ ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch
 
 ARMINTA exists within a larger system of autonomous agents and cognitive frameworks. For more context, see:
 
-- **[ardorlyceum.itch.io](https://ardorlyceum.itch.io)** — Interactive experiments and related projects
-- **[mematron.hearnow.com](https://mematron.hearnow.com)** — Author's technical blog and essays
-- **[keygentia.netlify.app](https://keygentia.netlify.app)** — Conceptual framework documentation
+- **[ardorlyceum.itch.io](https://ardorlyceum.itch.io)** — BIOS of Being registry, interactive terminal, and related projects
+- **[mematron.hearnow.com](https://mematron.hearnow.com)** — *BIOS_OS: The Sonification Cycle* — the 24-track audio tier of the BIOS of Being system
+- **[keygentia.netlify.app](https://keygentia.netlify.app)** — Keygentia Taxonomy Engine — an AI classification tool and Node 03 of the BIOS_OS project
 
 ---
 
