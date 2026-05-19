@@ -103,7 +103,7 @@ Built on top of the causal graph is a full cognitive stack:
 Six continuous features (0.0-1.0) derived from raw resource ratios, computed each step:
 
 | Feature | Signal |
-|---|---|
+|---|---|---|
 | `sess_net_intensity` | Network saturation fraction |
 | `sess_net_asymmetry` | Download vs symmetric traffic shape |
 | `sess_proc_cpu_dilution` | Hidden per-process load vs system average |
@@ -185,7 +185,7 @@ Version migration: ARMINTA reads its own prior-version pickles back to v86 and u
 ## Metrics Observed
 
 | | | | |
-|---|---|---|---|
+|---|---|---|---|---|
 | `cpu` | `mem` | `temp_c` | `io_wait` |
 | `load` | `load_ratio` | `swap_pct` | `hour_sin / hour_cos` |
 | `psi_cpu_some` | `psi_mem_some` | `psi_io_some` | |
@@ -220,27 +220,27 @@ Curses-based terminal UI. Displays live metrics, current action, causal graph su
 
 ## Version Lineage
 
-| Version | Key Addition |
-|---|---|
-| v36 | Governor lock; external governor change detection; gaming/interactive mode |
-| v69 | First version to persist state via pickle |
-| v70 | EvolutionaryPlanner + InactionOptimizer |
-| v83 | Session geometry classifier; latency-sensitive proactive rule |
-| v84 | Thermal formula fix; causal sign correction for benefit-direction metrics |
-| v85 | Dilution-only trigger; battery-aware governor |
-| v86 | P2P/torrent process detection; version-chain pickle migration |
-| v87 | Brand-agnostic browser process classifier |
-| v88 | Bootstrap exits on step count, not intervention count |
-| v89 | Fast-intervention edge filtering; dilution kill cooldown fix |
-| v99 | Causal graph stabilized on target hardware |
-| v100 | Situation model; situated causal edges; counterfactual reward correction |
-| v101 | Recency decay on interventional edges |
-| v102 | PSI stall integration; delayed observation pipeline; pending observation queue |
-| v103 | Streaming session suppression; confound exclusion from graph override |
-| v104 | Net receive rolling average; remote noise hint via UDP |
-| v105 | Full Arminta cognitive layer: emotion, self-model, world model, dream cycle, episodic DB |
-| v106 | nodelay input fix; terminal keyboard corruption prevention, final Minuet release |
-| v2 | Extension renderer sweep: `kill_extension_renderers` targets priority-1 browser extension processes as preferred escalation over `kill_top_proc` when browser renderer pressure is elevated; zero user impact, auto-restart |
+| Project | Version | Key Addition |
+|---|---|---|
+| Minuet | v36 | Governor lock; external governor change detection; gaming/interactive mode |
+| Minuet | v69 | First version to persist state via pickle |
+| Minuet | v70 | EvolutionaryPlanner + InactionOptimizer |
+| Minuet | v83 | Session geometry classifier; latency-sensitive proactive rule |
+| Minuet | v84 | Thermal formula fix; causal sign correction for benefit-direction metrics |
+| Minuet | v85 | Dilution-only trigger; battery-aware governor |
+| Minuet | v86 | P2P/torrent process detection; version-chain pickle migration |
+| Minuet | v87 | Brand-agnostic browser process classifier |
+| Minuet | v88 | Bootstrap exits on step count, not intervention count |
+| Minuet | v89 | Fast-intervention edge filtering; dilution kill cooldown fix |
+| Minuet | v99 | Causal graph stabilized on target hardware |
+| Minuet | v100 | Situation model; situated causal edges; counterfactual reward correction |
+| Minuet | v101 | Recency decay on interventional edges |
+| Minuet | v102 | PSI stall integration; delayed observation pipeline; pending observation queue |
+| Minuet | v103 | Streaming session suppression; confound exclusion from graph override |
+| Minuet | v104 | Net receive rolling average; remote noise hint via UDP |
+| Minuet | v105 | Full Arminta cognitive layer: emotion, self-model, world model, dream cycle, episodic DB |
+| Minuet | v106 | nodelay input fix; terminal keyboard corruption prevention, final Minuet release |
+| Arminta | v2 | Extension renderer sweep: `kill_extension_renderers` targets priority-1 browser extension processes as preferred escalation over `kill_top_proc` when browser renderer pressure is elevated; zero user impact, auto-restart |
 
 ---
 
