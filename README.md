@@ -4,7 +4,7 @@
 
 ARMINTA is a Python-based autonomous agent that treats the host operating system as an **interactive substrate**. Rather than serving as a passive monitor, it views the OS as a causal field to be interrogated through planned intervention. It observes, acts, measures effect, and updates a live causal graph to resolve system-level performance bottlenecks.
 
-As of the latest telemetry, ARMINTA has completed **92,000+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained weights, no external knowledge, and no simulation. Every edge in its graph has been earned through direct intervention and observation.
+As of the latest telemetry, ARMINTA has completed **102,658+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained weights, no external knowledge, and no simulation. Every edge in its graph has been earned through direct intervention and observation.
 
 > Source is closed. This repository documents the architecture, design philosophy, and version lineage of the Arminta engine.
 
