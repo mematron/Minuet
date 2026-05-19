@@ -42,7 +42,7 @@ ARMINTA is deployed as a persistent system service. Upon activation:
 **ARMINTA v2**
 ![ARMINTA live terminal 2](Armintascreen2.png)
 
-*At step 16,799, MINUET is still learning the machine. 130 causal edges, 82 interventions, building confidence. By step 87,560, ARMINTA v1 is in OPTIMIZE mode, curious, watching Chrome hammer 40–66% CPU. By step 104,326, Chrome sits at 9–11%. The agent is calm. It knows this machine.*
+>*At step 16,799, MINUET is still learning the machine. 130 causal edges, 82 interventions, building confidence. By step 87,560, ARMINTA v1 is in OPTIMIZE mode, curious, watching Chrome hammer 40–66% CPU. By step 104,326, Chrome sits at 9–11%. The agent is calm. It knows this machine.*
 
 ---
 
