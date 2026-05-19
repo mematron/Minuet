@@ -35,7 +35,7 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 
 ### System Topology Map
 
-```text
+<pre style="overflow-x: auto; white-space: pre; word-wrap: normal; font-family: monospace; line-height: 1.25; background-color: #1e1e2e; color: #cdd6f4; padding: 15px; border-radius: 4px;">
               ┌────────────────────────────────────────────────────────┐
               │                   EpisodicMemory                       │
               │         (Persistent SQLite Post-Mortem Log)            │
@@ -73,10 +73,10 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
                                       ▼
                   ┌────────────────────────────────────────┐
                   │               DreamCycle               │
-                  │     (Idle-State Maintenance Layer /    │
+                  │     (Idle-State Maintenance Layer /     │
                   │       AST Meta-Cognition Engine)       │
                   └────────────────────────────────────────┘
-```
+</pre>
 
 ---
 
