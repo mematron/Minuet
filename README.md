@@ -1,7 +1,10 @@
-# Minuet (v99)
+# ARMINTA (formerly Minuet)
+
 ### Autonomous Causal Discovery Agent for Linux
 
-Minuet is a Python-based autonomous agent that treats the host operating system as an **interactive substrate** ,not a passive environment to monitor, but a causal field to interrogate through planned intervention. It observes, acts, measures effect, and updates a live causal graph. It's able to report and resolve problems.
+ARMINTA is a Python-based autonomous agent that treats the host operating system as an **interactive substrate**, not a passive environment to monitor, but a causal field to interrogate through planned intervention. It observes, acts, measures effect, and updates a live causal graph. It does not report problems. It resolves them.
+
+Over 85,000+ live steps on target hardware, it has built a private causal world model from empirical measurement alone; no pretrained weights, no external knowledge, no simulation. Every edge in its graph was earned by doing something and watching what happened.
 
 > Source is closed. This repository documents architecture, design philosophy, and version lineage.
 
@@ -9,7 +12,7 @@ Minuet is a Python-based autonomous agent that treats the host operating system 
 
 ## What It Does
 
-Minuet runs as a background process with root access. Every 1–2.5 seconds (adaptive step rate) it:
+ARMINTA runs as a background process with root access. Every 0.8–2.5 seconds (adaptive step rate) it:
 
 1. **Samples** ~28 system metrics spanning CPU, memory, thermals, network, I/O, swap, PSI, and IRQ state
 2. **Classifies** the current session geometry (workload fingerprint derived from pure resource ratios, no app names)
@@ -17,21 +20,53 @@ Minuet runs as a background process with root access. Every 1–2.5 seconds (ada
 4. **Executes** the action if warranted, or monitors if nominal
 5. **Measures** the before/after delta across targeted metrics
 6. **Updates** the interventional edge for that `(action, metric)` pair
+7. **Records** the episode — action, outcome, reward, emotional state — to a persistent episodic database
 
-After enough interventions, the graph stabilizes. Minuet knows which actions actually move which metrics on *this specific machine* under *this specific workload shape* , not in theory, but from empirical measurement.
+After enough interventions, the graph stabilizes. ARMINTA knows which actions actually move which metrics on *this specific machine* under *this specific workload shape* from empirical measurement.
 
 ---
-![Minuet v99 live](minuet99a.png)
+
+![ARMINTA live terminal](minuet99a.png)
+
+---
 
 ## Architecture
 
 ### TrueCausalGraph
 
-The core reasoning substrate. Not correlation-based. Minuet records **interventional edges** `(action, metric)` pairs with measured effect magnitudes, using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
+The core reasoning substrate. Not correlation-based. ARMINTA records **interventional edges**v`(action, metric)` pairs with measured effect magnitudes; using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
 
 Actions with fast side effects (governor changes, process kills) write only to their target metrics to prevent confound poisoning. Observation-only actions accumulate broader edges naturally, diluted across many samples.
 
+A **reward-discount layer** cross-references each action's causal edge scores against its actual reward history. If an action's metric effects look positive but its rewards are consistently negative (a selection-bias signature) the graph override score is discounted proportionally before the decision is made. The graph tells ARMINTA what happens; reward tells it whether that's good.
+
 The graph is bootstrapped from 60 steps of passive observation before any intervention fires.
+
+### Situated Causal Learning
+
+Causal edges are learned per-situation, not globally. ARMINTA maintains separate edge weight distributions for each classified workload context (idle, compile, stream, etc.). Before crediting an action for a metric improvement, it applies **counterfactual correction**.  If the metric was already trending in the right direction before the action fired, that trend is subtracted from the credit. The agent does not take rewards it did not earn.
+
+Recency decay further down-weights observations from distant steps, so the graph reflects current machine behavior rather than drifting on ancient history.
+
+### Cognitive Architecture (Arminta Layer)
+
+Built on top of the causal graph is a full cognitive stack:
+
+**Emotion Model** — tracks valence states (calm, curious, focused, confident, alert) updated each step from reward signal and prediction error. Emotional state influences action aggression and is recorded with every episode.
+
+**Self-Model** — tracks ARMINTA's own performance over time: dreams generated, hypotheses surfaced, self-modifications made, prediction accuracy. The agent maintains an explicit representation of its own capabilities and history.
+
+**World Model** — Bayesian association table mapping system state fingerprints to action outcomes. Complements the causal graph with a softer probabilistic layer.
+
+**Dream Cycle** — during idle periods ARMINTA enters a hypothesis generation loop. It proposes candidate causal relationships it has not yet directly tested, scores them against the interventional graph, and queues supported ones for active testing. This is lightweight model-based planning: the agent imagines before it acts.
+
+**Metacognition** — a SELF_ASSESS mode in which ARMINTA reviews its own recent decision quality. During self-assessment it can defer uncertain actions and introspect on whether its current cognitive mode matches the situation.
+
+**Genetic Algorithm Tuner** — slowly evolves internal parameters (learning rate, stress multipliers, thresholds) against a rolling reward history. The agent tunes itself without manual hyperparameter search.
+
+**Episodic Memory** — every action, dream, hypothesis, and self-modification is written to a persistent SQLite database with timestamp, step count, emotional state, reward, and outcome. 1,400+ episodes logged to date. The agent can be asked what it was doing and how it felt about it.
+
+**Error Recovery** — non-fatal exceptions are caught, logged, and counted. A clean-steps counter tracks consecutive error-free steps; after 100 clean steps the error clears from the display. If it is not happening anymore, it is not there anymore.
 
 ### Session Geometry Classifier
 
@@ -56,28 +91,28 @@ Brand-agnostic, cmdline-based process taxonomy. Identifies Chromium-family (`--t
 
 Every 300 steps, analyzes rolling metric history via EMA to adapt five runtime thresholds toward observed machine reality:
 
-- `CPU_WARN`, `MEM_WARN`, `NET_WARN` — tuned to 95th percentile × 1.5
-- `DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` tuned to 75th percentile × 1.3
+-> `CPU_WARN`, `MEM_WARN`, `NET_WARN` —> tuned to 95th percentile × 1.5
+-> `DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` —> tuned to 75th percentile × 1.3
 
-Floors are hard-coded. Thresholds can only decrease gradually. Adapted values persist across sessions in the pickle.
+Floors are hard-coded. Thresholds can only decrease gradually. Adapted values persist across sessions.
 
 Gap detection: high-variance metrics with no confident causal action surface as reported gaps, fed to the ActionProposer.
 
 ### ActionProposer (Safe Self-Improvement)
 
-When the SelfTuner identifies an uncovered metric gap, the ActionProposer consults a whitelist of safe shell command templates organized by metric category (CPU, memory, I/O, network receive/send, interface errors/drops, WiFi signal, temperature). Only whitelisted commands with safe parameter substitution can ever be proposed. No arbitrary shell execution is possible. New candidate actions are sandboxed before promotion.
+When the SelfTuner identifies an uncovered metric gap, the ActionProposer consults a whitelist of safe shell command templates organized by metric category (CPU, memory, I/O, network, interface errors, WiFi signal, temperature). Only whitelisted commands with safe parameter substitution can ever be proposed. No arbitrary shell execution is possible. New candidate actions are sandboxed before promotion.
 
 ### Precognitive Launch Detection
 
-Watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, etc.) and pre-emptively locks the performance governor *before* telemetry spikes, eliminating the 30-second spin-up latency window where the machine thrashes before the agent can respond.
+Watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, etc.) and pre-emptively locks the performance governor *before* telemetry spikes — eliminating the 30-second spin-up latency window where the machine thrashes before the agent can respond.
 
 ### IRQ Storm Detection
 
-Polls `/proc/interrupts` for configurable IRQ prefix (`rtw89` by default — the rtw89 PCIe WiFi driver). When per-step interrupt delta exceeds threshold, fires `renice_ksoftirqd` to boost kernel softirq handler priority. 120-second cooldown.
+Polls `/proc/interrupts` for configurable IRQ prefix (`rtw89` by default — the rtw89 PCIe WiFi driver). When per-step interrupt delta exceeds threshold, fires `renice_ksoftirqd` to boost kernel softirq handler priority. Tracks consecutive ineffective fires per storm epoch; after 4 fires with no improvement the agent concludes the storm is hardware-level and stands down rather than wasting interventions.
 
 ### Curiosity Probe
 
-If reward hasn't meaningfully changed for 150 steps, fires a low-impact probe to verify causal edges are still live. Prevents the agent from assuming a stable causal graph on a machine whose workload has shifted silently.
+If reward has not meaningfully changed for 150 steps, fires a low-impact probe to verify causal edges are still live. Prevents the agent from assuming a stable causal graph on a machine whose workload has shifted silently.
 
 ### Cross-Device UDP Noise Broadcast
 
@@ -85,7 +120,7 @@ Listens and emits surprise hints over UDP (port 54321) for multi-machine environ
 
 ### OOM Immunity
 
-Writes `-1000` to `/proc/self/oom_score_adj` at startup. The kernel will not kill Minuet during a memory crunch; the moment it is most needed.
+Writes `-1000` to `/proc/self/oom_score_adj` at startup. The kernel will not kill ARMINTA during a memory crunch — the moment it is most needed.
 
 ### PSI Integration
 
@@ -93,7 +128,7 @@ Reads `/proc/pressure/{cpu,memory,io}` stall percentages. PSI memory pressure ab
 
 ### ZRAM / ZSWAP Awareness
 
-Startup scan detects compressed swap presence. On zram/zswap systems, cache drop logic is suppressed entirely — compression means "drop caches" burns CPU for zero net memory gain.
+Startup scan detects compressed swap presence. On zram/zswap systems, cache drop logic is suppressed entirely.  Compression means "drop caches" burns CPU for zero net memory gain.
 
 ### Battery-Aware Governor
 
@@ -103,15 +138,17 @@ Performance governor is suppressed below 20% battery. Between 20–50%, governor
 
 ## Persistence
 
-State persists across sessions via pickle. Minuet carries forward:
+State persists across sessions via pickle. ARMINTA carries forward:
 
-- Full interventional edge graph with all sample histories
-- Adapted threshold values from SelfTuner
-- Cooldown timestamps for all actions
-- Rolling metric history buffer (for tuner input)
-- Top-process log deque
+-> Full interventional edge graph with all sample histories
+-> Per-action reward histories for bias correction
+-> Situated causal edges per workload context
+-> Adapted threshold values from SelfTuner
+-> Cooldown timestamps for all actions
+-> Episodic memory (separate SQLite DB)
+-> Cognitive state: emotion values, self-model counters, world model associations, GA best parameters, reward history
 
-Version migration: Minuet reads its own prior-version pickle (`v98`, `v97`, ... back to `v86`) and upgrades state automatically. Sessions are never lost to a version increment.
+Version migration: ARMINTA reads its own prior-version pickles back to v86 and upgrades state automatically. Sessions are never lost to a version increment.
 
 ---
 
@@ -146,7 +183,7 @@ renice_ksoftirqd        monitor
 
 ## Interface
 
-Curses-based terminal UI. Displays live metrics, current action, causal graph summary, top interventional edges with effect magnitude and confidence, event log, and adaptive threshold state. Step rate adjusts between 0.8s (crisis) and 2.5s (all-nominal) based on current system pressure.
+Curses-based terminal UI. Displays live metrics, current action, causal graph summary, top interventional edges with effect magnitude and confidence, cognitive state (mode, emotion, curiosity, dream count), event log, and adaptive threshold state. Step rate adjusts between 0.8s (crisis) and 2.5s (all-nominal) based on current system pressure. Non-fatal errors are displayed with a clean-steps decay counter.  The badge disappears once the agent has run clean long enough to make it irrelevant.
 
 ---
 
@@ -164,16 +201,24 @@ Curses-based terminal UI. Displays live metrics, current action, causal graph su
 | v87 | Brand-agnostic browser process classifier |
 | v88 | Bootstrap exits on step count, not intervention count |
 | v89 | Fast-intervention edge filtering; dilution kill cooldown fix |
-| v99 | Current. Causal graph fully stabilized on target hardware. |
+| v99 | Causal graph stabilized on target hardware |
+| v100 | Situation model; situated causal edges; counterfactual reward correction |
+| v101 | Recency decay on interventional edges |
+| v102 | PSI stall integration; delayed observation pipeline; pending observation queue |
+| v103 | Streaming session suppression; confound exclusion from graph override |
+| v104 | Net receive rolling average; remote noise hint via UDP |
+| v105 | Full Arminta cognitive layer: emotion, self-model, world model, dream cycle, episodic DB |
+| v106 | nodelay input fix; terminal keyboard corruption prevention |
+| v107 | Reward-discount layer on graph override; per-action reward history; clean-steps error decay |
 
 ---
 
 ## Relationship to SUKOSHI
 
-Minuet (v99) is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) , a browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where Minuet interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
+ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi) A browser-native causal entity built on Paramorphic Learning, Q-learning, and genetic algorithm hypothesis evolution. Where ARMINTA interrogates an OS, SUKOSHI interrogates its own conceptual space. Same architectural lineage; different substrate.
 
 ---
 
 ## Part of the BIOS of Being Framework
 
-Minuet exists within a larger system. See: [ardorlyceum.itch.io](https://ardorlyceum.itch.io) · [mematron.hearnow.com](https://mematron.hearnow.com) · [keygentia.netlify.app](https://keygentia.netlify.app)
+ARMINTA exists within a larger system. See: [ardorlyceum.itch.io](https://ardorlyceum.itch.io) · [mematron.hearnow.com](https://mematron.hearnow.com) · [keygentia.netlify.app](https://keygentia.netlify.app)
