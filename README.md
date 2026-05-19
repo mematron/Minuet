@@ -188,7 +188,7 @@ At startup, ARMINTA writes `-1000` to `/proc/self/oom_score_adj`. The Linux kern
 ARMINTA carries its entire learned history across sessions via a unified state pickle and a dedicated episodic database:
 
 *   **104,115 Steps** of empirical learning on target hardware.
-*   **2,615+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
+*   **2,618+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
 *   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to Minuet v86, ensuring learned knowledge is never lost during updates.
 
 The persistent state includes:
