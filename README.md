@@ -96,9 +96,9 @@ Unlike traditional agents, ARMINTA possesses the ability to modify its own sourc
 ## Persistence & Progress
 
 ARMINTA carries its entire learned history across sessions via a unified state pickle and a dedicated episodic database:
-*   **92,063 Steps** of experience on target hardware.
-*   **1,805 Episodes** logged, documenting every major hypothesis and self-modification.
-*   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to v86.
+*   **102,593 Steps** of experience on target hardware.
+*   **2,600 Episodes** logged, documenting every major hypothesis and self-modification.
+*   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to (Minuet v86).
 
 ---
 
