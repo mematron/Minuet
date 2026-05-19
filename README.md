@@ -4,7 +4,7 @@
 
 ARMINTA is a Python-based autonomous agent that treats the host operating system as an **interactive substrate**. Rather than serving as a passive monitor, it views the OS as a causal field to be interacted with, learned from, and optimized through repeated experimentation. ARMINTA autonomously discovers causal relationships between system actions and performance metrics, maintaining a learnable world model that improves over time.
 
-As of the latest telemetry, ARMINTA has completed **102,658+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained models or external heuristics guide its reasoning. The agent operates continuously, learning which system interventions produce measurable improvements across CPU, memory, I/O, thermal, and network dimensions.
+As of the latest telemetry, ARMINTA has completed **104,115+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained models or external heuristics guide its reasoning. The agent operates continuously, learning which system interventions produce measurable improvements across CPU, memory, I/O, thermal, and network dimensions.
 
 > **Source Status**: Closed source. This repository documents the architecture, design philosophy, and version lineage of the ARMINTA engine.
 
@@ -65,7 +65,7 @@ graph TD
     classDef memory fill:#1e1e2e,stroke:#cdd6f4,stroke-width:1px,color:#cdd6f4;
     
     ModeController["Mode Controller <br/> (Q-Learning Over Cognitive Postures)"]
-    EpisodicMemory["EpisodicMemory <br/> (2,600+ Recorded Episodes in SQLite)"]:::memory
+    EpisodicMemory["EpisodicMemory <br/> (2,618+ Recorded Episodes in SQLite)"]:::memory
     BayesianPerception["BayesianPerception <br/> (Belief Updating & Noise Smoothing)"]
     WorldModel["WorldModel <br/> (State-Action Outcome Statistics)"]
     EmotionalState["EmotionalState <br/> (Affective Modulation: Calm, Bored, Stressed, etc.)"]
@@ -187,8 +187,8 @@ At startup, ARMINTA writes `-1000` to `/proc/self/oom_score_adj`. The Linux kern
 
 ARMINTA carries its entire learned history across sessions via a unified state pickle and a dedicated episodic database:
 
-*   **102,658 Steps** of empirical learning on target hardware.
-*   **2,600+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
+*   **104,115 Steps** of empirical learning on target hardware.
+*   **2,615+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
 *   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to Minuet v86, ensuring learned knowledge is never lost during updates.
 
 The persistent state includes:
