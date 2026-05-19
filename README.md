@@ -12,7 +12,7 @@ Over 90,000+ live steps on target hardware, it has built a private causal world 
 
 ## What It Does
 
-ARMINTA runs as a background process with root access. Every 0.8–2.5 seconds (adaptive step rate) it:
+ARMINTA runs as a background process with root access. Every 0.8-2.5 seconds (adaptive step rate) it:
 
 1. **Samples** ~28 system metrics spanning CPU, memory, thermals, network, I/O, swap, PSI, and IRQ state
 2. **Classifies** the current session geometry (workload fingerprint derived from pure resource ratios, no app names)
@@ -71,7 +71,7 @@ Built on top of the causal graph is a full cognitive stack:
 
 ### Session Geometry Classifier
 
-Six continuous features (0.0–1.0) derived from raw resource ratios, computed each step:
+Six continuous features (0.0-1.0) derived from raw resource ratios, computed each step:
 
 | Feature | Signal |
 |---|---|
@@ -86,14 +86,14 @@ These flow into both action selection and causal edge accumulation. The agent le
 
 ### Browser Process Classifier
 
-Brand-agnostic, cmdline-based process taxonomy. Identifies Chromium-family (`--type=renderer`, `--type=gpu-process`, `--type=zygote`, `--extension-process`), Gecko/Firefox-family (`-contentproc`, `-childID`, `-isForBrowser`), and WebKit-family processes by structural flags, not by executable name. Assigns kill priority 0–4. Never kills MAIN processes. Extension renderers (priority 1) are safest; foreground tab renderers (priority 3) cause Aw Snap but browser survives.
+Brand-agnostic, cmdline-based process taxonomy. Identifies Chromium-family (`--type=renderer`, `--type=gpu-process`, `--type=zygote`, `--extension-process`), Gecko/Firefox-family (`-contentproc`, `-childID`, `-isForBrowser`), and WebKit-family processes by structural flags, not by executable name. Assigns kill priority 0-4. Never kills MAIN processes. Extension renderers (priority 1) are safest; foreground tab renderers (priority 3) cause Aw Snap but browser survives.
 
 ### SelfTuner (Adaptive Threshold Engine)
 
 Every 300 steps, analyzes rolling metric history via EMA to adapt five runtime thresholds toward observed machine reality:
 
-`CPU_WARN`, `MEM_WARN`, `NET_WARN` tuned to 95th percentile × 1.5
-`DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` tuned to 75th percentile × 1.3
+`CPU_WARN`, `MEM_WARN`, `NET_WARN` tuned to 95th percentile x 1.5
+`DILUTION_LOG_TRIGGER`, `DILUTION_KILL_TRIGGER` tuned to 75th percentile x 1.3
 
 Floors are hard-coded. Thresholds can only decrease gradually. Adapted values persist across sessions.
 
@@ -133,7 +133,7 @@ Startup scan detects compressed swap presence. On zram/zswap systems, cache drop
 
 ### Battery-Aware Governor
 
-Performance governor is suppressed below 20% battery. Between 20–50%, governor is deferred unless dilution exceeds threshold. Turbo boost is always battery-checked before enabling.
+Performance governor is suppressed below 20% battery. Between 20-50%, governor is deferred unless dilution exceeds threshold. Turbo boost is always battery-checked before enabling.
 
 ---
 
@@ -174,10 +174,11 @@ Version migration: ARMINTA reads its own prior-version pickles back to v86 and u
 
 ```
 sync                    drop_caches             log_top_proc
-kill_top_proc           log_top_net_proc        flush_dns
-log_iface_health        disable_wifi_powersave  set_cpu_performance
-enable_turbo            set_gpu_performance     set_ac_max_perf
-renice_ksoftirqd        monitor
+kill_top_proc           kill_extension_renderers
+log_top_net_proc        flush_dns               log_iface_health
+disable_wifi_powersave  set_cpu_performance     enable_turbo
+set_gpu_performance     set_ac_max_perf         renice_ksoftirqd
+monitor
 ```
 
 ---
@@ -210,6 +211,7 @@ Curses-based terminal UI. Displays live metrics, current action, causal graph su
 | v104 | Net receive rolling average; remote noise hint via UDP |
 | v105 | Full Arminta cognitive layer: emotion, self-model, world model, dream cycle, episodic DB |
 | v106 | nodelay input fix; terminal keyboard corruption prevention, final Minuet release |
+| v2 | Extension renderer sweep: `kill_extension_renderers` targets priority-1 browser extension processes as preferred escalation over `kill_top_proc` when browser renderer pressure is elevated; zero user impact, auto-restart |
 
 ---
 
