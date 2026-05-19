@@ -27,9 +27,7 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 ---
 
 ![MINUET live terminal](minuet99a.png)
-MINUET
 ![ARMINTA live terminal](Armintascreen.png)
-ARMINTA
 
 ---
 
