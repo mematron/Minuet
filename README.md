@@ -155,18 +155,18 @@ Version migration: ARMINTA reads its own prior-version pickles back to v86 and u
 
 ## Metrics Observed
 
-```
-cpu             mem             temp_c          io_wait
-load            load_ratio      swap_pct        hour_sin / hour_cos
-psi_cpu_some    psi_mem_some    psi_io_some
-net_recv_kbps   net_sent_kbps   disk_write_kbps
-iface_errors    iface_drops     wifi_signal_dbm
-governor_is_performance         irq_rate_hi
-sess_net_intensity              sess_net_asymmetry
-sess_proc_cpu_dilution          sess_net_vs_disk
-sess_thermal_slack              sess_mem_pressure
-sess_browser_renderer_pressure
-```
+| | | | |
+|---|---|---|---|
+| `cpu` | `mem` | `temp_c` | `io_wait` |
+| `load` | `load_ratio` | `swap_pct` | `hour_sin / hour_cos` |
+| `psi_cpu_some` | `psi_mem_some` | `psi_io_some` | |
+| `net_recv_kbps` | `net_sent_kbps` | `disk_write_kbps` | |
+| `iface_errors` | `iface_drops` | `wifi_signal_dbm` | |
+| `governor_is_performance` | `irq_rate_hi` | | |
+| `sess_net_intensity` | `sess_net_asymmetry` | | |
+| `sess_proc_cpu_dilution` | `sess_net_vs_disk` | | |
+| `sess_thermal_slack` | `sess_mem_pressure` | | |
+| `sess_browser_renderer_pressure` | | | |
 
 ---
 
