@@ -174,8 +174,6 @@ The persistent state includes:
 | **Arminta v1** | Mid 2025 | Rebrand and architectural consolidation. Introduction of SUKOSHI linkage. |
 | **Arminta v2** | Current | **Extension Renderer Sweep**: Implementation of Priority-1 browser process targeting, enabling surgical intervention in browser-heavy workloads with zero user-visible impact. |
 
-For a complete changelog, see [CHANGELOG.md](./CHANGELOG.md) (if available in the repository).
-
 ---
 
 ## Known Limitations & Constraints
