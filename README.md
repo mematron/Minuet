@@ -48,6 +48,7 @@ graph TD
     HypothesisEngine["HypothesisEngine <br/> (Genetic Algorithm over System Graph Nodes)"]
     WorkingMemory["WorkingMemory <br/> (Rolling Buffer / 15-Step Delayed Pipeline)"]:::memory
     DreamCycle["DreamCycle <br/> (Idle Maintenance / AST Meta-Cognition Engine)"]
+    Padding[" "]:::invisible
 
     %% Cognitive Framework Interconnections
     BayesianPerception -->|Commit Success/Failure| EpisodicMemory
@@ -57,6 +58,10 @@ graph TD
     HypothesisEngine -->|Generates Causal Links| WorkingMemory
     EmotionalState -->|Alters Decision Posture| WorkingMemory
     WorkingMemory -->|Triggers Deep Pruning| DreamCycle
+    DreamCycle ~~~ Padding
+
+    classDef invisible fill:none,stroke:none,color:#0000;
+    linkStyle 7 stroke:none,stroke-width:0px;
 
 ```
 
