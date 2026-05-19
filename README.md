@@ -122,7 +122,7 @@ Unlike traditional agents, ARMINTA possesses the ability to modify its own sourc
 2.  **Atomic Commit**: Safe replacement of the running script on disk with transaction semantics (write to temporary file, then rename).
 3.  **Automated Backups**: Retention of versioned `.bak` files for recovery if a self-modification introduces instability.
 
-This capability makes ARMINTA a **true learning system** — it doesn't just refine its weights; it refactors its own decision logic.
+This capability makes ARMINTA a **true learning system** It refines its weights and refactors its own decision logic.
 
 ---
 
@@ -145,7 +145,7 @@ When the SelfTuner identifies an uncovered metric gap, the **ActionProposer** co
 
 ### Precognitive Launch Detection
 
-ARMINTA watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, and others) and pre-emptively locks the performance governor before telemetry spikes. This eliminates the spin-up latency window where the machine thrashes before the agent can respond — acting on intent rather than reaction.
+ARMINTA watches for target processes appearing in the process table (`npm`, `python`, `blender`, `steam`, `ffmpeg`, `cargo`, game executables, and others) and pre-emptively locks the performance governor before telemetry spikes. This eliminates the spin-up latency window where the machine thrashes before the agent can respond; acting on intent rather than reaction.
 
 ---
 
@@ -169,7 +169,7 @@ ARMINTA listens and emits surprise hints over UDP (port 54321) for multi-machine
 
 ### OOM Immunity
 
-At startup, ARMINTA writes `-1000` to `/proc/self/oom_score_adj`. The Linux kernel will not select ARMINTA for termination during a memory crunch — which is precisely the moment its intervention is most needed.
+At startup, ARMINTA writes `-1000` to `/proc/self/oom_score_adj`. The Linux kernel will not select ARMINTA for termination during a memory crunch, when its intervention is needed the most.
 
 ---
 
