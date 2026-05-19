@@ -43,12 +43,14 @@ graph TD
     EmotionalState["EmotionalState <br/> (Affective Modulation: Calm, Bored, Stressed, etc.)"]
     HypothesisEngine["HypothesisEngine <br/> (Genetic Algorithm over Causal Nodes)"]
     MetaCognition["MetaCognition <br/> (AST-Based Source Code Rewriting)"]
+    DreamCycle["DreamCycle <br/> (Consolidation & Paramorphic Learning)"]
     
     %% Interconnections
     ModeController -->|Selects Mode| BayesianPerception
     BayesianPerception -->|Updates Belief| ModeController
     EmotionalState -->|Modulates Thresholds| ModeController
-    ModeController -->|Triggers Dream| HypothesisEngine
+    ModeController -->|Triggers Dream| DreamCycle
+    DreamCycle -->|Evolves Hypotheses| HypothesisEngine
     HypothesisEngine -->|Refines Edges| WorldModel
     WorldModel -->|Logs Anomalies| EpisodicMemory
     ModeController -->|Self-Assess| MetaCognition
@@ -56,6 +58,15 @@ graph TD
 ```
 
 ---
+
+### The Dream Cycle: Consolidation & Paramorphic Learning
+
+The `DREAM` mode is a critical pillar of ARMINTA's cognitive architecture. It represents the agent's offline processing phase, triggered during system idle periods (low load and low PSI stall pressure). During a Dream Cycle, ARMINTA shifts from external intervention to internal optimization.
+
+*   **Hypothesis Evolution**: The **HypothesisEngine** runs a Genetic Algorithm over the causal graph. It "imagines" potential links between nodes and tests them against recorded history. Successful hypotheses are promoted to the live graph, allowing the agent to discover structure in noise without active intervention.
+*   **Genetic Hyperparameter Optimization**: The **GeneticOptimizer** evolves the agent's own RL parameters (learning rate, discount factor, curiosity weight) against the rolling reward history. This is **Paramorphic Learning**: the system optimizes its own learning process to better match the specific hardware and workload it inhabits.
+*   **Consolidation**: ARMINTA prunes the world model and clears accumulated prediction errors. This ensures the internal representation remains lean and focused on current system behavior.
+*   **Affective Voice**: Dreaming is logged in ARMINTA's own "voice," providing a window into the agent's internal assessment of its progress and current "emotional" state.
 
 ### TrueCausalGraph & Poison Registry
 
@@ -71,12 +82,6 @@ Unlike traditional agents, ARMINTA possesses the ability to modify its own sourc
 1.  **Validation**: Syntax and linting checks via `ast.parse`.
 2.  **Atomic Commit**: Safe replacement of the running script on disk.
 3.  **Automated Backups**: Retention of versioned `.bak` files for recovery.
-
-### Affective Modulation (Emotion Model)
-
-The agent's internal state is modulated by seven continuous affects: `calm`, `curious`, `stressed`, `confident`, `frustrated`, `bored`, and `focused`. 
-*   **Boredom**: Emerges from sustained periods of high `calm` and low `stressed`, triggering increased `curiosity` and proactive probes.
-*   **Frustration**: Accumulates from failed interventions, leading to shifts in cognitive mode to `INVESTIGATE` or `DREAM`.
 
 ---
 
