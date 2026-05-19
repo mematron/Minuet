@@ -2,11 +2,34 @@
 
 ### Autonomous Causal Discovery Agent for Linux
 
-ARMINTA is a Python-based autonomous agent that treats the host operating system as an **interactive substrate**. Rather than serving as a passive monitor, it views the OS as a causal field to be interrogated through planned intervention. It observes, acts, measures effect, and updates a live causal graph to resolve system-level performance bottlenecks.
+ARMINTA is a Python-based autonomous agent that treats the host operating system as an **interactive substrate**. Rather than serving as a passive monitor, it views the OS as a causal field to be interacted with, learned from, and optimized through repeated experimentation. ARMINTA autonomously discovers causal relationships between system actions and performance metrics, maintaining a learnable world model that improves over time.
 
-As of the latest telemetry, ARMINTA has completed **102,658+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained weights, no external knowledge, and no simulation. Every edge in its graph has been earned through direct intervention and observation.
+As of the latest telemetry, ARMINTA has completed **102,658+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained models or external heuristics guide its reasoning. The agent operates continuously, learning which system interventions produce measurable improvements across CPU, memory, I/O, thermal, and network dimensions.
 
-> Source is closed. This repository documents the architecture, design philosophy, and version lineage of the Arminta engine.
+> **Source Status**: Closed source. This repository documents the architecture, design philosophy, and version lineage of the ARMINTA engine.
+
+---
+
+## Quick Start
+
+### Prerequisites
+- **OS**: Linux (kernel 5.4+)
+- **Python**: 3.9+
+- **Privileges**: Root access (ARMINTA operates as a privileged background daemon)
+- **Dependencies**: Standard system utilities (`sysstat`, `cgroup` tools, Linux PSI support)
+
+### Installation & Deployment
+ARMINTA is deployed as a persistent system service. Upon activation:
+
+1. The agent initializes its learned state (or begins with an empty causal graph on first run).
+2. It spawns a root-privileged background loop that persists across reboots.
+3. Monitoring and intervention metrics are logged to a dedicated SQLite database.
+4. The agent's "emotional state" and decision rationale are accessible via episodic logs.
+
+### Observing Behavior
+- **Episodic Database**: Query `arminta_episodes.db` for detailed logs of every action, outcome, and self-assessment event.
+- **State Snapshot**: The current world model and learned parameters are serialized in a versioned pickle file.
+- **System Metrics**: Integration with standard Linux tools (`/proc/meminfo`, `PSI`, thermal sensors) provides ground truth.
 
 ---
 
@@ -14,13 +37,13 @@ As of the latest telemetry, ARMINTA has completed **102,658+ live steps** on tar
 
 ARMINTA operates as a root-privileged background process. Every 0.8 to 2.5 seconds (utilizing an adaptive step rate), it executes the following cycle:
 
-1.  **Sampling**: Collects ~28 system metrics across CPU, memory, thermals, network, I/O, swap, PSI, and IRQ states.
-2.  **Classification**: Derives the current "Session Geometry": a workload fingerprint based on resource ratios rather than process names.
-3.  **Cognitive Selection**: Utilizes a high-level **Q-learning Mode Controller** to select a cognitive posture (`OBSERVE`, `INVESTIGATE`, `OPTIMIZE`, `DREAM`, or `SELF_ASSESS`).
-4.  **Action Execution**: Within the chosen mode, selects and executes an action via the causal graph and learned confidence scores.
-5.  **Measurement**: Captures the before/after delta across targeted metrics within a precise 300ms window.
-6.  **Causal Update**: Updates the interventional edge for the `(action, metric)` pair, applying recency decay and confound filtering.
-7.  **Episodic Logging**: Records the complete state (action, outcome, reward, and emotional affect) to a persistent SQLite database.
+1.  **Sampling**: Collects ~28 system metrics across CPU, memory, thermals, network, I/O, swap, Pressure Stall Information (PSI), and IRQ states.
+2.  **Classification**: Derives the current **"Session Geometry"**: a workload fingerprint based on resource ratios rather than process names, enabling context-aware decision-making.
+3.  **Cognitive Selection**: Utilizes a high-level **Q-learning Mode Controller** to select an operational posture: `OBSERVE` (passive learning), `INVESTIGATE` (active exploration), `OPTIMIZE` (targeted intervention), `DREAM` (offline consolidation), or `SELF_ASSESS` (introspection and self-modification).
+4.  **Action Execution**: Within the chosen mode, the causal graph and learned confidence scores determine which system action (if any) to execute.
+5.  **Measurement**: Captures the before/after delta across targeted metrics within a precise 300ms window, isolating causal effects.
+6.  **Causal Update**: Updates the interventional edge for the `(action, metric)` pair, applying recency decay and confound filtering to refine confidence estimates.
+7.  **Episodic Logging**: Records the complete state (action, outcome, reward, and emotional affect) to a persistent SQLite database for future learning and debugging.
 
 ---
 
@@ -28,7 +51,12 @@ ARMINTA operates as a root-privileged background process. Every 0.8 to 2.5 secon
 
 ### Cognitive Hierarchy
 
-ARMINTA employs a "double-loop" learning architecture. A high-level reinforcement learning agent manages the system's cognitive focus, while a lower-level causal engine manages system interventions.
+ARMINTA employs a **"double-loop" learning architecture**:
+
+- **High-Level Agent**: A reinforcement learning (RL) controller manages the system's cognitive focus, selecting which mode to enter based on current emotional state and performance targets.
+- **Low-Level Engine**: A causal graph engine manages specific system interventions, drawing on learned confidence estimates and the poison registry to avoid harmful actions.
+
+This separation allows the agent to simultaneously optimize long-term strategy while executing precise, safe interventions.
 
 ```mermaid
 graph TD
@@ -61,63 +89,126 @@ graph TD
 
 ### The Dream Cycle: Consolidation & Paramorphic Learning
 
-The `DREAM` mode is a critical pillar of ARMINTA's cognitive architecture. It represents the agent's offline processing phase, triggered during system idle periods (low load and low PSI stall pressure). During a Dream Cycle, ARMINTA shifts from external intervention to internal optimization.
+The **`DREAM` mode** is a critical pillar of ARMINTA's cognitive architecture. It represents the agent's offline processing phase, triggered during system idle periods (low CPU load and low PSI stall pressure, typically during nights or low-activity windows). Dreams are ARMINTA's internal mechanism for consolidating knowledge and evolving its own reasoning.
 
-*   **Hypothesis Evolution**: The **HypothesisEngine** runs a Genetic Algorithm over the causal graph. It "imagines" potential links between nodes and tests them against recorded history. Successful hypotheses are promoted to the live graph, allowing the agent to discover structure in noise without active intervention.
-*   **Genetic Hyperparameter Optimization**: The **GeneticOptimizer** evolves the agent's own RL parameters (learning rate, discount factor, curiosity weight) against the rolling reward history. This is **Paramorphic Learning**: the system optimizes its own learning process to better match the specific hardware and workload it inhabits.
-*   **Consolidation**: ARMINTA prunes the world model and clears accumulated prediction errors. This ensures the internal representation remains lean and focused on current system behavior.
-*   **Affective Voice**: Dreaming is logged in ARMINTA's own "voice," providing a window into the agent's internal assessment of its progress and current "emotional" state.
+**Key Components:**
+
+*   **Hypothesis Evolution**: The **HypothesisEngine** runs a Genetic Algorithm over the causal graph. It "imagines" potential links between system states and outcomes, testing them against the episodic history. Successful hypotheses (those that explain past observations) are retained and strengthen the causal model. Failed hypotheses are discarded, pruning impossible causal paths.
+*   **Genetic Hyperparameter Optimization**: The **GeneticOptimizer** evolves ARMINTA's own RL parameters (learning rate, discount factor, curiosity weight) against rolling reward history. This allows the agent to meta-learn the optimal balance between exploration and exploitation.
+*   **Consolidation**: ARMINTA prunes the world model and clears accumulated prediction errors. This ensures the internal representation remains lean and focused on current system behavior, preventing "catastrophic forgetting" of recent dynamics.
+*   **Affective Voice**: Dreaming is logged in ARMINTA's own "voice," providing a window into the agent's internal assessment of its progress and current "emotional" state. Dream logs offer transparency into why the system modified itself or changed its strategy.
+
+---
 
 ### TrueCausalGraph & Poison Registry
 
-The reasoning engine is strictly interventional, utilizing the distinction between observation and intervention (do-calculus). 
+The reasoning engine is strictly **interventional**, utilizing the distinction between **observation** and **intervention** (do-calculus from causal inference theory).
 
-*   **Interventional Edges**: Every `(action, metric)` pair is stored as a distribution of normalized deltas. Confidence is weighted by sample count.
-*   **Poison Edge Registry**: To prevent "confound poisoning," the agent maintains a hard-coded registry of structurally impossible causal paths. For instance, `renice_ksoftirqd` is prohibited from being credited with changes in `temp_c` or `net_recv_kbps` within the 300ms window, ensuring the graph remains grounded in physical reality.
-*   **Reward-Discount Layer**: If an action's metric effects appear positive but its rewards are consistently negative (a selection-bias signature), the graph's recommendation is discounted proportionally.
+**Key Mechanisms:**
+
+*   **Interventional Edges**: Every `(action, metric)` pair is stored as a distribution of normalized deltas (before → after). Confidence is weighted by sample count and recency. This allows the agent to answer counterfactual questions like "if I renice process X, how much will memory pressure drop?"
+*   **Poison Edge Registry**: To prevent "confound poisoning" (mistakenly believing an action causes an effect when it's actually spurious), the agent maintains a hard-coded registry of structurally impossible causal paths. For instance, `renice_ksoftirqd` is prohibited from affecting network latency, as process priority cannot logically influence network hardware behavior.
+*   **Reward-Discount Layer**: If an action's metric effects appear positive (e.g., lower memory pressure) but its rewards are consistently negative (the overall system performance degrades), the graph's recommendation is discounted proportionally. This prevents the agent from optimizing a single dimension at the expense of overall system health.
+
+---
 
 ### Advanced Metacognition (Self-Rewriting)
 
-Unlike traditional agents, ARMINTA possesses the ability to modify its own source code. In `SELF_ASSESS` mode, the **MetaCognition** module can perform **AST-based rewriting** of the script's own constants (e.g., `STEP_RATE`, `PSI_THRESHOLDS`). This process includes:
-1.  **Validation**: Syntax and linting checks via `ast.parse`.
-2.  **Atomic Commit**: Safe replacement of the running script on disk.
-3.  **Automated Backups**: Retention of versioned `.bak` files for recovery.
+Unlike traditional agents, ARMINTA possesses the ability to modify its own source code. In **`SELF_ASSESS` mode**, the **MetaCognition** module can perform **AST-based rewriting** of the script's own constants and decision thresholds, allowing the agent to improve without external human intervention.
+
+**Self-Modification Safeguards:**
+
+1.  **Validation**: Syntax and linting checks via `ast.parse` ensure any rewritten code is valid Python before execution.
+2.  **Atomic Commit**: Safe replacement of the running script on disk with transaction semantics (write to temporary file, then rename).
+3.  **Automated Backups**: Retention of versioned `.bak` files for recovery if a self-modification introduces instability.
+
+This capability makes ARMINTA a **true learning system** — it doesn't just refine its weights; it refactors its own decision logic.
 
 ---
 
 ### System Integration Details
 
-*   **PSI Safety Interlock**: ARMINTA utilizes Linux **Pressure Stall Information**. A hard interlock (`PSI_MEM_DROP_CACHES_SUPPRESS = 40.0`) prevents the agent from triggering `drop_caches` when memory stalls are active, as evicting clean pages during a stall would exacerbate system pressure.
-*   **Session Geometry**: Six continuous features (e.g., `sess_net_vs_disk`, `sess_proc_cpu_dilution`) allow the agent to learn context-specific behaviors. It understands that a high CPU load during a "compile" session requires different handling than the same load during a "streaming" session.
-*   **Browser Taxonomy**: A brand-agnostic classifier identifies browser processes by architectural flags. It specifically targets **Extension Renderers** (Priority 1) for escalation, as they can be killed and auto-restarted with zero impact on the user's active tabs.
+*   **PSI Safety Interlock**: ARMINTA utilizes Linux **Pressure Stall Information (PSI)** to measure memory and I/O contention. A hard interlock (`PSI_MEM_DROP_CACHES_SUPPRESS = 40.0`) prevents the agent from triggering `drop_caches` when memory PSI stall pressure exceeds 40%, as this could worsen thrashing.
+*   **Session Geometry**: Six continuous features (e.g., `sess_net_vs_disk`, `sess_proc_cpu_dilution`) allow the agent to learn context-specific behaviors. It understands that a high CPU load during a video encode is acceptable, but high CPU load during an idle period is anomalous. This enables the agent to distinguish between workload-appropriate system states and genuine problems.
+*   **Browser Taxonomy**: A brand-agnostic classifier identifies browser processes by architectural flags (memory footprint, thread count, file descriptor usage patterns). It specifically targets **Extension Renderers** (Priority 1) for escalation, as they can be killed without user-visible data loss. Main browser processes are avoided to prevent session loss.
 
 ---
 
 ## Persistence & Progress
 
 ARMINTA carries its entire learned history across sessions via a unified state pickle and a dedicated episodic database:
-*   **102,593 Steps** of experience on target hardware.
-*   **2,600 Episodes** logged, documenting every major hypothesis and self-modification.
-*   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to (Minuet v86).
+
+*   **102,658 Steps** of empirical learning on target hardware.
+*   **2,600+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
+*   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to Minuet v86, ensuring learned knowledge is never lost during updates.
+
+The persistent state includes:
+- **Causal Graph**: Learned `(action, metric)` confidence distributions
+- **RL Parameters**: Trained Q-values for cognitive mode selection
+- **Episodic Database**: Timestamped records of actions, outcomes, and rewards
+- **Self-Model**: Parameters the agent has learned about itself via introspection
 
 ---
 
-## Version Lineage (Recent Highlights)
+## Terminology & Key Concepts
 
-| Version | Milestone |
+| Term | Definition |
 |---|---|
-| **Minuet v105** | Introduction of full cognitive layer (Emotion, Self-Model, Episodic DB). |
-| **Minuet v106** | Terminal corruption prevention and final Minuet stability release. |
-| **Arminta v2** | **Extension Renderer Sweep**: Implementation of Priority-1 targeting, allowing surgical intervention in browser-heavy workloads with zero user-visible impact. |
+| **Session Geometry** | A workload fingerprint derived from resource ratios (CPU%, memory%, I/O%, etc.) rather than process names. Allows context-aware decision-making. |
+| **do-calculus** | The mathematical framework for reasoning about causal effects (interventions) vs. mere correlations (observations). |
+| **Confound Poisoning** | A spurious causal relationship inferred when an unobserved third variable causes both the action and the observed metric (e.g., load spike causes both process restart and memory drop). |
+| **Paramorphic Learning** | Learning not by adjusting weights, but by evolving the structure of the model itself (hypothesis generation and testing). |
+| **Poison Registry** | A hard-coded whitelist of impossible causal edges, preventing the agent from learning logically impossible relationships. |
+| **PSI (Pressure Stall Information)** | Linux kernel mechanism for measuring I/O and memory contention. Used to detect thrashing and system saturation. |
+
+---
+
+## Version Lineage
+
+| Version | Release Date | Milestone |
+|---|---|---|
+| **Minuet v86** | Early 2024 | Foundation: first persistent causal world model. |
+| **Minuet v100** | Mid 2024 | Genetic algorithm integration for hypothesis evolution. |
+| **Minuet v105** | Late 2024 | Introduction of full cognitive layer (Emotional State, Self-Model, Episodic Database). |
+| **Minuet v106** | Early 2025 | Terminal corruption prevention; final Minuet stability release. |
+| **Arminta v1** | Mid 2025 | Rebrand and architectural consolidation. Introduction of SUKOSHI linkage. |
+| **Arminta v2** | Current | **Extension Renderer Sweep**: Implementation of Priority-1 browser process targeting, enabling surgical intervention in browser-heavy workloads with zero user-visible impact. |
+
+For a complete changelog, see [CHANGELOG.md](./CHANGELOG.md) (if available in the repository).
+
+---
+
+## Known Limitations & Constraints
+
+- **Linux-Only**: ARMINTA is designed exclusively for Linux systems with modern PSI support.
+- **Root Privileges Required**: Full system optimization requires root access. Some metrics can be gathered unprivileged, but interventions cannot.
+- **Closed Source**: The full implementation is proprietary. This repository documents architecture and philosophy only.
+- **Hardware-Specific Learning**: The causal graph is learned on specific hardware. Transfer to different systems requires re-learning, though the agent's architecture is hardware-agnostic.
+- **Latency**: System actions have 0.8–2.5 second response times. Not suitable for sub-second performance tuning.
 
 ---
 
 ## Relationship to SUKOSHI
 
-ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi), a browser-native causal entity built on Paramorphic Learning and genetic algorithm hypothesis evolution.
+ARMINTA is the local substrate predecessor to [SUKOSHI](https://ardorlyceum.itch.io/sukoshi), a browser-native causal entity built on Paramorphic Learning and genetic algorithm hypothesis evolution. Where ARMINTA optimizes the Linux kernel and system processes, SUKOSHI applies the same causal discovery and self-modification principles within a browser environment.
 
 ---
 
 ## Part of the BIOS of Being Framework
 
-ARMINTA exists within a larger system. See: [ardorlyceum.itch.io](https://ardorlyceum.itch.io) · [mematron.hearnow.com](https://mematron.hearnow.com) · [keygentia.netlify.app](https://keygentia.netlify.app)
+ARMINTA exists within a larger system of autonomous agents and cognitive frameworks. For more context, see:
+
+- **[ardorlyceum.itch.io](https://ardorlyceum.itch.io)** — Interactive experiments and related projects
+- **[mematron.hearnow.com](https://mematron.hearnow.com)** — Author's technical blog and essays
+- **[keygentia.netlify.app](https://keygentia.netlify.app)** — Conceptual framework documentation
+
+---
+
+## License & Attribution
+
+ARMINTA is closed-source software. This repository serves as a public record of the engine's design philosophy and evolution. For inquiries about licensing, deployment, or collaboration, contact the author.
+
+---
+
+**Last Updated**: May 2026  
+**Maintainer**: [@mematron](https://github.com/mematron)
