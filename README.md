@@ -33,6 +33,19 @@ ARMINTA is deployed as a persistent system service. Upon activation:
 
 ---
 
+**MINUET v99**
+![MINUET live terminal](minuet99a.png)
+
+**ARMINTA v1**
+![ARMINTA live terminal](Armintascreen.png)
+
+**ARMINTA v2**
+![ARMINTA live terminal 2](Armintascreen2.png)
+
+At step 16,799, **MINUET** is still learning the machine -> 130 causal edges, 82 interventions, building confidence. By step 87,560, **ARMINTA v1** is in OPTIMIZE mode, curious, watching Chrome hammer 40–66% CPU. By step 104,326 in **ARMINTA v2**, Chrome sits at 9–11%. The agent is calm. It knows this machine.
+
+---
+
 ## Core Operational Loop
 
 ARMINTA operates as a root-privileged background process. Every 0.8 to 2.5 seconds (utilizing an adaptive step rate), it executes the following cycle:
@@ -44,15 +57,6 @@ ARMINTA operates as a root-privileged background process. Every 0.8 to 2.5 secon
 5.  **Measurement**: Captures the before/after delta across targeted metrics within a precise 300ms window, isolating causal effects.
 6.  **Causal Update**: Updates the interventional edge for the `(action, metric)` pair, applying recency decay and confound filtering to refine confidence estimates.
 7.  **Episodic Logging**: Records the complete state (action, outcome, reward, and emotional affect) to a persistent SQLite database for future learning and debugging.
-
-**MINUET v99**
-![MINUET live terminal](minuet99a.png)
-
-**ARMINTA v1**
-![ARMINTA live terminal](Armintascreen.png)
-
-**ARMINTA v2**
-![ARMINTA live terminal 2](Armintascreen2.png)
 
 ---
 
