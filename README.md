@@ -204,4 +204,6 @@ ARMINTA exists within a larger system of autonomous agents and cognitive framewo
 
 ## License & Attribution
 
-ARMINTA is closed-source software. This repository serves as a public record of the engine's design philosophy and evolution. For inquiries about licensing, deployment, or collaboration, contact the author.
+ARMINTA is closed-source software. This repository, including all architecture documentation, diagrams, and design specifications, serves as a public record of the engine's design philosophy and evolution, and remains the intellectual property of Jason German (@mematron).
+
+Redistribution or reproduction of this documentation without attribution is not permitted. For inquiries about licensing, deployment, or collaboration, contact the author via GitHub or through the BIOS of Being project at ardorlyceum.itch.io.
