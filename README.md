@@ -33,6 +33,53 @@ After enough interventions, the graph stabilizes. ARMINTA knows which actions ac
 
 ## Architecture
 
+### System Topology Map
+
+The diagram below maps the continuous data flow, state updates, and modification loops running inside the agent:
+
+              ┌────────────────────────────────────────────────────────┐
+              │                   EpisodicMemory                       │
+              │         (Persistent SQLite Post-Mortem Log)            │
+              └───────▲────────────────────────────────────────▲───────┘
+                      │                                        │
+        [Commit Success/Failure]                       [Log Anomalies]
+                      │                                        │
+┌─────────────────────┴─────────────┐            ┌─────────────┴─────────────┐
+│        BayesianPerception         │            │        WorldModel         │
+│   (Smooths Raw Telemetry Noise    │            │  (Maps State-Action Pairs │
+│     Into True Belief State)       │            │   To Outcome Statistics)  │
+└─────────────────────▲─────────────┘            └─────────────▲─────────────┘
+                      │                                        │
+            [Reads Current State]                     [Tracks Graph Edges]
+                      │                                        │
+┌─────────────────────┴─────────────┐            ┌─────────────┴─────────────┐
+│          EmotionalState           │            │     HypothesisEngine      │
+│  (Fluctuating Affect Parameters;  │◄───────────┤  (Genetic Algorithm Runs  │
+│   Modulates Warning Thresholds)   │            │   Over System Graph Nodes)│
+└─────────────────────▲─────────────┘            └─────────────▲─────────────┘
+                      │                                        │
+          [Alters Decision Posture]                 [Generates Causal Links]
+                      │                                        │
+                      └───────┬────────────────────────┬───────┘
+                              │                        │
+                              ▼                        ▼
+                  ┌────────────────────────────────────────┐
+                  │             WorkingMemory              │
+                  │   (Rolling Buffer / 15-Step Delayed    │
+                  │         Observation Pipeline)          │
+                  └───────────────────┬────────────────────┘
+                                      │
+                         [Triggers Deep Pruning]
+                                      │
+                                      ▼
+                  ┌────────────────────────────────────────┐
+                  │               DreamCycle               │
+                  │     (Idle-State Maintenance Layer /     │
+                  │       AST Meta-Cognition Engine)       │
+                  └────────────────────────────────────────┘
+
+---
+
 ### TrueCausalGraph
 
 The core reasoning substrate. Not correlation-based. ARMINTA records **interventional edges** `(action, metric)` pairs with measured effect magnitudes, using the do-calculus distinction between observation and intervention. Every edge is a list of normalized deltas; confidence grows with sample count.
@@ -42,6 +89,21 @@ Actions with fast side effects (governor changes, process kills) write only to t
 A **reward-discount layer** cross-references each action's causal edge scores against its actual reward history. If an action's metric effects look positive but its rewards are consistently negative (a selection-bias signature) the graph override score is discounted proportionally before the decision is made. The graph tells ARMINTA what happens; reward tells it whether that's good.
 
 The graph is bootstrapped from 60 steps of passive observation before any intervention fires.
+
+### Causal Execution & Paramorphic Learning Loops
+
+ARMINTA relies on dual-horizon feedback structures to verify its own impacts and rewrite its configuration without stopping execution:
+
+#### 1. The 15-Step Delayed Observation Loop
+Immediate verification fails when dealing with complex Linux kernel subsystems (such as memory management or process group shifting). To prevent thrashing or misinterpreting delayed systemic responses, ARMINTA routes actions through a delayed observation pipeline:
+* **T=0**: An intervention is executed (e.g., dropping clean caches, shifting an IRQ handling priority via `ksoftirqd`, or invoking a targeted browser architecture eviction hierarchy).
+* **Tracking**: The action is registered alongside an explicit validation key mapped via `ACTION_REWARD_KEYS`.
+* **T+15**: Rather than instantly judging the result, the agent holds a snapshot of the execution state and waits exactly 15 processing steps before auditing the specific target metrics. This reveals the actual long-term causal outcome, which is then fed directly back into the `WorldModel` and `EpisodicMemory`.
+
+#### 2. Self-Modification & The MetaCognition Layer
+To adapt to changing hardware architectures, the agent utilizes a two-tier **Paramorphic Learning Framework**:
+* **Minor Tier (SelfTuner)**: Evaluates metric distributions every few hundred cycles to dynamically calibrate warning thresholds (`CPU_WARN`, `MEM_WARN`), sliding them out during intensive compilation/development tasks and tightening them when idle.
+* **Meta-Cognition Tier (AST Mutation Engine)**: Modifies the underlying source code dynamically during the `DreamCycle`. It isolates system constants, evaluates variance trends over thousands of steps, generates code updates via an Abstract Syntax Tree (AST) processor, and passes the result through a strict internal Python linting and range-validation filter before executing an atomic write back to disk.
 
 ### Situated Causal Learning
 
@@ -53,19 +115,23 @@ Recency decay further down-weights observations from distant steps, so the graph
 
 Built on top of the causal graph is a full cognitive stack:
 
-**Emotion Model** tracks valence states (calm, curious, focused, confident, alert) updated each step from reward signal and prediction error. Emotional state influences action aggression and is recorded with every episode.
+**BayesianPerception** smooths out raw telemetry noise and temporary spikes by tracking system variables through sequential probabilistic updates. This ensures mitigation routines are only executed when a true state change has occurred rather than reacting immediately to volatile spikes.
+
+**WorkingMemory** acts as the volatile immediate scratchpad. It maintains a short-term rolling buffer of system events, telemetry deltas, and recent interventions, serving as the primary dataset for short-horizon evaluation and feeding the delayed observation pipeline.
+
+**Emotion Model** tracks valence states (calm, curious, focused, confident, alert) updated each step from reward signal and prediction error. Emotional state skews internal systemic affect parameters, shifting warning thresholds and influencing action aggression during high-stress triggers (e.g., severe IO wait or unmitigated PSI stalls) to prioritize system survival. It is recorded with every episode.
 
 **Self-Model** tracks ARMINTA's own performance over time: dreams generated, hypotheses surfaced, self-modifications made, prediction accuracy. The agent maintains an explicit representation of its own capabilities and history.
 
-**World Model** is a Bayesian association table mapping system state fingerprints to action outcomes. It complements the causal graph with a softer probabilistic layer.
+**World Model** is a Bayesian association table mapping system state fingerprints to action outcomes over long operational lifespans. It complements the causal graph with a softer probabilistic layer, contextualizing behaviors based on overall environmental topology rather than flat thresholds.
 
-**Dream Cycle** runs during idle periods. ARMINTA enters a hypothesis generation loop, proposes candidate causal relationships it has not yet directly tested, scores them against the interventional graph, and queues supported ones for active testing. This is lightweight model-based planning: the agent imagines before it acts.
+**Dream Cycle** runs asynchronously during resource idle periods. ARMINTA enters a hypothesis generation loop, proposes candidate causal relationships it has not yet directly tested, scores them against the interventional graph, and queues supported ones for active testing. This handles resource-intensive housekeeping, prunes weak links, and drives model-based planning by imagining before acting.
 
 **Metacognition** is a SELF_ASSESS mode in which ARMINTA reviews its own recent decision quality. During self-assessment it can defer uncertain actions and introspect on whether its current cognitive mode matches the situation.
 
 **Genetic Algorithm Tuner** slowly evolves internal parameters (learning rate, stress multipliers, thresholds) against a rolling reward history. The agent tunes itself without manual hyperparameter search.
 
-**Episodic Memory** writes every action, dream, hypothesis, and self-modification to a persistent SQLite database with timestamp, step count, emotional state, reward, and outcome. 1,400+ episodes logged to date. The agent can be asked what it was doing and how it felt about it.
+**Episodic Memory** writes every action, dream, hypothesis, and self-modification to a persistent SQLite database (`arminta_episodic.db`) with timestamp, step count, emotional state, reward, and outcome. 1,400+ episodes logged to date. The agent can be asked what it was doing and how it felt about it.
 
 **Error Recovery** catches, logs, and counts non-fatal exceptions. A clean-steps counter tracks consecutive error-free steps; after 100 clean steps the error clears from the display. If it is not happening anymore, it is not there anymore.
 
