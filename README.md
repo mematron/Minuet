@@ -4,7 +4,7 @@
 
 ARMINTA is a Python-based autonomous agent that treats the host operating system as an **interactive substrate**. Rather than serving as a passive monitor, it views the OS as a causal field to be interacted with, learned from, and optimized through repeated experimentation. ARMINTA autonomously discovers causal relationships between system actions and performance metrics, maintaining a learnable world model that improves over time.
 
-As of the latest telemetry, ARMINTA has completed **104,115+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained models or external heuristics guide its reasoning. The agent operates continuously, learning which system interventions produce measurable improvements across CPU, memory, I/O, thermal, and network dimensions.
+As of the latest telemetry, ARMINTA has completed **138,527+ live steps** on target hardware. It has constructed a private causal world model derived entirely from empirical measurement; no pretrained models or external heuristics guide its reasoning. The agent operates continuously, learning which system interventions produce measurable improvements across CPU, memory, I/O, thermal, and network dimensions.
 
 > **Source Status**: Closed source. This repository documents the architecture, design philosophy, and version lineage of the ARMINTA engine.
 
@@ -42,7 +42,7 @@ ARMINTA is deployed as a persistent system service. Upon activation:
 **ARMINTA v2**
 ![ARMINTA live terminal 2](Armintascreen2.png)
 
->*At step 16,799, MINUET is still learning the machine. 130 causal edges, 82 interventions, building confidence. By step 87,560, the engine has been reborn as ARMINTA v1, in OPTIMIZE mode, curious, watching Chrome hammer 40–66% CPU. By step 104,326, ARMINTA v2, Chrome sits at 9–11%. The agent is calm. It knows this machine.*
+>*At step 16,799, MINUET is still learning the machine. 130 causal edges, 82 interventions, building confidence. By step 87,560, the engine has been reborn as ARMINTA v1, in OPTIMIZE mode, curious, watching Chrome hammer 40–66% CPU. By step 138,527, ARMINTA v2, Chrome sits at 9–11%. The agent is calm. It knows this machine.*
 
 ---
 
@@ -78,7 +78,7 @@ graph TD
     classDef memory fill:#1e1e2e,stroke:#cdd6f4,stroke-width:1px,color:#cdd6f4;
     
     ModeController["Mode Controller <br/> (Q-Learning Over Cognitive Postures)"]
-    EpisodicMemory["EpisodicMemory <br/> (2,618+ Recorded Episodes in SQLite)"]:::memory
+    EpisodicMemory["EpisodicMemory <br/> (4,696+ Recorded Episodes in SQLite)"]:::memory
     BayesianPerception["BayesianPerception <br/> (Belief Updating & Noise Smoothing)"]
     WorldModel["WorldModel <br/> (State-Action Outcome Statistics)"]
     EmotionalState["EmotionalState <br/> (Affective Modulation: Calm, Bored, Stressed, etc.)"]
@@ -200,8 +200,8 @@ At startup, ARMINTA writes `-1000` to `/proc/self/oom_score_adj`. The Linux kern
 
 ARMINTA carries its entire learned history across sessions via a unified state pickle and a dedicated episodic database:
 
-*   **104,115 Steps** of empirical learning on target hardware.
-*   **2,618+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
+*   **138,527 Steps** of empirical learning on target hardware.
+*   **4,696+ Episodes** logged, documenting every major hypothesis, intervention, and self-modification event.
 *   **Version-Agnostic Migration**: Automatic state upgrading from prior versions back to Minuet v86, ensuring learned knowledge is never lost during updates.
 
 The persistent state includes:
